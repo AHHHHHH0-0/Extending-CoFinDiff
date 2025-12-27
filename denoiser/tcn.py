@@ -21,11 +21,11 @@ class TCNResidualBlock(nn.Module):
     
     def __init__(
         self,
-        channels: int,
-        dilation: int,
-        time_dim: int,
-        cond_dim: int,
-        kernel_size: int,
+        channels: int = config.CHANNELS,
+        kernel_size: int = config.KERNEL_SIZE,
+        dilation: int = config.DILATION, # change across blocks
+        time_dim: int = config.TIME_DIM,
+        cond_dim: int = config.COND_DIM,
         num_groups: int = config.NUM_GROUPS
     ):
         super().__init__()
@@ -62,6 +62,11 @@ class TCNResidualBlock(nn.Module):
         t_emb: torch.Tensor,
         cond_emb: torch.Tensor
     ) -> torch.Tensor:
+        # Debug shapes
+        print("x shape:", x.shape)
+        print("t_emb shape:", t_emb.shape)
+        print("cond_emb shape:", cond_emb.shape)
+
         # First convolution block + group normalization + SiLU
         h = self.conv1(x)
         h = self.norm1(h)

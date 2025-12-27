@@ -19,9 +19,12 @@ SEED = 3407
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # TCN parameters
+CHANNELS = 64
 KERNEL_SIZE = 3
 DILATION = 1
 NUM_GROUPS = 8
+TIME_DIM = 128
+COND_DIM = 128
 
 # Diffusion parameters
 TIMESTEPS = 1000
