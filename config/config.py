@@ -20,6 +20,7 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # TCN parameters
 KERNEL_SIZE = 3
+DILATION = 1
 NUM_GROUPS = 8
 
 # Diffusion parameters
