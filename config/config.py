@@ -1,6 +1,6 @@
-'''
+"""
 Configuration for the project.
-'''
+"""
 
 import os
 import torch
@@ -18,7 +18,9 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 SEED = 3407
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Model parameters
+# TCN parameters
+KERNEL_SIZE = 3
+NUM_GROUPS = 8
 
 # Diffusion parameters
 TIMESTEPS = 1000
