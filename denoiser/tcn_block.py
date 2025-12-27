@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from config import config
-from .conv1d import CausalConv1d
-from .layers import FiLM
+from .causal_conv import CausalConv1d
+from .film import FiLM
 
 
 class TCNResidualBlock(nn.Module):
