@@ -1,25 +1,22 @@
-"""
-One single Temporal Convolutional Network (TCN) residual block with conditioning.
-- Causal dilated convolution for temporal modeling
-- Group normalization for stability
-- Timestep embedding
-- Conditioning via FiLM 
-
-Architecture:
-    x -> Conv1 -> Norm1 -> SiLU -> (+t_emb) -> Conv2 -> Norm2 -> FiLM -> SiLU -> (+x)
-"""
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from config import config
-from .layers import CausalConv1d
+from .conv1d import CausalConv1d
 from .layers import FiLM
+
 
 class TCNResidualBlock(nn.Module):
     """
-    TCN residual block class with forward pass.
+    One single Temporal Convolutional Network (TCN) residual block with conditioning.
+    - Causal dilated convolution for temporal modeling
+    - Group normalization for stability
+    - Timestep embedding
+    - Conditioning via FiLM 
+
+    Architecture:
+        x -> Conv1 -> Norm1 -> SiLU -> (+t_emb) -> Conv2 -> Norm2 -> FiLM -> SiLU -> (+x)
     """
     
     def __init__(
@@ -65,9 +62,6 @@ class TCNResidualBlock(nn.Module):
         t_emb: torch.Tensor,
         cond_emb: torch.Tensor
     ) -> torch.Tensor:
-        """
-        Forward pass through the residual block.
-        """
         # First convolution block + group normalization + SiLU
         h = self.conv1(x)
         h = self.norm1(h)
