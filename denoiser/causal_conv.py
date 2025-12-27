@@ -14,8 +14,8 @@ class CausalConv1d(nn.Conv1d):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: int = config.KERNEL_SIZE,
-        dilation: int = config.DILATION,
+        kernel_size: int,
+        dilation: int,
         **kwargs
     ):
         # Remove padding from kwargs
