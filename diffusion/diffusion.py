@@ -1,7 +1,3 @@
-"""
-DDPM Diffusion forward (noising) and reverse (denoising) processes.
-"""
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
