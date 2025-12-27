@@ -1,7 +1,3 @@
-"""
-Create sinusoidal timestep embeddings for the denoiser.
-"""
-
 import torch
 import torch.nn.functional as F
 import math
