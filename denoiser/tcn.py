@@ -25,7 +25,7 @@ class TCNResidualBlock(nn.Module):
         dilation: int,
         time_dim: int,
         cond_dim: int,
-        kernel_size: int = config.KERNEL_SIZE,
+        kernel_size: int,
         num_groups: int = config.NUM_GROUPS
     ):
         super().__init__()
