@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from config import config
-
 
 class CausalConv1d(nn.Conv1d):
     """
