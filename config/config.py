@@ -18,6 +18,15 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 SEED = 3407
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+# Embedding parameters
+MICRO_INPUT_DIM = 10
+MICRO_HIDDEN_DIM = 256
+MICRO_OUTPUT_DIM = 128
+
+MACRO_INPUT_DIM = 10
+MACRO_HIDDEN_DIM = 256
+MACRO_OUTPUT_DIM = 128
+
 # TCN parameters
 CHANNELS = 64
 KERNEL_SIZE = 3
