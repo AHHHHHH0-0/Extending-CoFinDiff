@@ -35,6 +35,10 @@ NUM_GROUPS = 8
 TIME_DIM = 128
 COND_DIM = 128
 
+# FiLM parameters
+FILM_HIDDEN_DIM = 128
+FILM_COND_DIM = 128
+
 # Diffusion parameters
 TIMESTEPS = 1000
 OBJECTIVE = 'pred_noise'
