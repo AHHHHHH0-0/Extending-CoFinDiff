@@ -18,35 +18,28 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 SEED = 3407
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Embedding parameters
-MICRO_INPUT_DIM = 10
-MICRO_HIDDEN_DIM = 256
-MICRO_OUTPUT_DIM = 128
+# Data preprocessing parameters
+HAAR_WAVELET_LEVELS = 3  
+RETURN_SCALE_FACTOR = 100.0
 
-MACRO_INPUT_DIM = 10
-MACRO_HIDDEN_DIM = 256
-MACRO_OUTPUT_DIM = 128
+# Condition encoder parameters
+COND_TOKEN_DIM = 20  
+COND_HIDDEN_DIM = 64 
+NUM_CONDITION_TOKENS = 4  # trend, realized_vol, interest_rate, market volatility index
 
-# TCN parameters
-CHANNELS = 64
-KERNEL_SIZE = 3
-DILATION = 1
-NUM_GROUPS = 8
-TIME_DIM = 128
-COND_DIM = 128
+# U-Net architecture parameters
+UNET_IN_CHANNELS = 1
+UNET_BASE_CHANNELS = 20  
+UNET_CHANNEL_MULT = [1, 2, 4, 8]
+UNET_NUM_RES_BLOCKS = 2  
+UNET_KERNEL_SIZE = 3
+UNET_NUM_GROUPS = 4  
+UNET_DROPOUT = 0.0  
+TIME_EMBED_DIM = 128  
 
-# FiLM parameters
-FILM_HIDDEN_DIM = 128
-FILM_COND_DIM = 128
-
-# Denoiser parameters
-IN_CHANNELS = 5
-HIDDEN_CHANNELS = 64
-NUM_LAYERS = 8
-TIME_DIM = 128
-COND_DIM = 128
-KERNEL_SIZE = 3
-NUM_GROUPS = 8
+# Cross-attention parameters
+CROSS_ATTN_NUM_HEADS = 4
+CROSS_ATTN_SCALE = 0.1 
 
 # Diffusion parameters
 TIMESTEPS = 1000
@@ -58,11 +51,14 @@ AUTO_NORMALIZE = False
 
 # Training parameters
 BATCH_SIZE = 32
-LEARNING_RATE = 1e-4
-EPOCHS = 500
+LEARNING_RATE = 1e-4  
+EPOCHS = 300
 WEIGHT_DECAY = 0.01
 WARMUP_STEPS = 20
+EARLY_STOPPING = 100 
+P_UNCOND = 0.1  
+UPSAMPLE_EXTREME_EVENTS = 5 
 
 # Sampling parameters
-GUIDANCE_SCALE = 1.0
+GUIDANCE_SCALE = 1.0 
 RETURN_TRAJECTORY = False
