@@ -9,6 +9,13 @@ DOWN_SAMPLE_PADDING = 1
 UP_SAMPLE_KERNEL_SIZE = 3
 UP_SAMPLE_PADDING = 1
 
+# Encoder and decoder block parameters
+NUM_RES_BLOCKS = 2
+TIME_EMBED_DIM = 80
+
+
+
+
 # Residual block parameters
 RES_BLOCK_KERNEL_SIZE = 3
 RES_BLOCK_NUM_GROUPS = 4
