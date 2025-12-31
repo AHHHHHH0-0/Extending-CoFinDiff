@@ -11,25 +11,11 @@ UP_SAMPLE_PADDING = 1
 
 # Encoder and decoder block parameters
 NUM_RES_BLOCKS = 2
-TIME_EMBED_DIM = 80
-
-
-
 
 # Residual block parameters
 RES_BLOCK_KERNEL_SIZE = 3
 RES_BLOCK_NUM_GROUPS = 4
 RES_BLOCK_DROPOUT = 0.0
 
-# Cross-attention block parameters
-CROSS_ATTN_NUM_HEADS = 4
-CROSS_ATTN_SCALE = 0.1
-
 # U-Net model parameters
-UNET_IN_CHANNELS = 1
-UNET_BASE_CHANNELS = 20  
-UNET_CHANNEL_MULT = [1, 2, 4, 8]
-UNET_NUM_RES_BLOCKS = 2  
-UNET_KERNEL_SIZE = 3
-UNET_NUM_GROUPS = 4  
-UNET_DROPOUT = 0.0  
+TIME_EMBED_DIM = 80
