@@ -18,8 +18,12 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 SEED = 3407
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+# Haar wavelet parameters
+HAAR_WAVELET_LEVELS = 8 # assert log2(T) == levels
+TARGET_SHAPE = (16, 16) # assert H * W == T
+
 # Data preprocessing parameters
-HAAR_WAVELET_LEVELS = 3  
+T = 256 # power of 2 for the Haar wavelet transform
 RETURN_SCALE_FACTOR = 100.0
 
 # Condition encoder parameters
