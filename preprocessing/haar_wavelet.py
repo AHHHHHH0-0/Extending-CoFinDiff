@@ -7,7 +7,7 @@ import torch.nn as nn
 import numpy as np
 from typing import Tuple
 
-from config import config
+from config import preprocess_config
 
 
 class HaarWaveletTransform(nn.Module):
@@ -17,9 +17,9 @@ class HaarWaveletTransform(nn.Module):
 
     def __init__(
         self, 
-        levels: int = config.HAAR_WAVELET_LEVELS, 
-        target_shape: Tuple[int, int] = config.TARGET_SHAPE,
-        time_steps: int = config.T
+        levels: int = preprocess_config.HAAR_WAVELET_LEVELS, 
+        target_shape: Tuple[int, int] = preprocess_config.TARGET_SHAPE,
+        time_steps: int = preprocess_config.T
     ):
         super().__init__()
         self.levels = levels
