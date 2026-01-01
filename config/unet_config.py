@@ -19,3 +19,7 @@ RES_BLOCK_DROPOUT = 0.0
 
 # U-Net model parameters
 TIME_EMBED_DIM = 80
+
+# Cross-attention parameters
+CROSS_ATTN_NUM_HEADS = 4
+CROSS_ATTN_SCALE = 0.1 
