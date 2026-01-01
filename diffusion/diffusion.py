@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Tuple
 
-from config.config import config
+from config import diffusion_config, project_config
 from .utils import get_beta_schedule
 
 
@@ -17,11 +17,11 @@ class Diffusion:
     
     def __init__(
         self,
-        timesteps: int = config.TIMESTEPS,
-        beta_schedule: str = config.BETA_SCHEDULE,
-        beta_start: float = config.BETA_START,
-        beta_end: float = config.BETA_END,
-        device: str = config.DEVICE
+        timesteps: int = diffusion_config.TIMESTEPS,
+        beta_schedule: str = diffusion_config.BETA_SCHEDULE,
+        beta_start: float = diffusion_config.BETA_START,
+        beta_end: float = diffusion_config.BETA_END,
+        device: str = project_config.DEVICE
     ):
         self.T = timesteps
         self.device = device
@@ -87,7 +87,7 @@ class Diffusion:
         x: torch.Tensor,
         t: int,
         cond_emb: torch.Tensor,
-        guidance_scale: float = config.GUIDANCE_SCALE
+        guidance_scale: float = diffusion_config.GUIDANCE_SCALE
     ) -> torch.Tensor:
         """
         Sample from the reverse diffusion process. 
@@ -125,8 +125,8 @@ class Diffusion:
         model: nn.Module,
         shape: Tuple[int,],
         cond_emb: torch.Tensor,
-        guidance_scale: float = config.GUIDANCE_SCALE,
-        return_trajectory: bool = config.RETURN_TRAJECTORY
+        guidance_scale: float = diffusion_config.GUIDANCE_SCALE,
+        return_trajectory: bool = diffusion_config.RETURN_TRAJECTORY
     ) -> torch.Tensor:
         """
         Generate samples via the full reverse diffusion process.
