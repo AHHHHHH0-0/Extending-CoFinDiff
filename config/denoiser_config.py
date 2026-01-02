@@ -17,9 +17,12 @@ RES_BLOCK_KERNEL_SIZE = 3
 RES_BLOCK_NUM_GROUPS = 4
 RES_BLOCK_DROPOUT = 0.0
 
-# U-Net model parameters
-TIME_EMBED_DIM = 80
-
 # Cross-attention parameters
 CROSS_ATTN_NUM_HEADS = 4
 CROSS_ATTN_SCALE = 0.1 
+COND_CONTEXT_DIM = 20
+
+# U-Net model parameters
+TIME_EMBED_DIM = 256
+BASE_CHANNELS = 20
+CHANNEL_MULT = [1, 2, 4, 8]
