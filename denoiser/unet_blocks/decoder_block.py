@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-from config import unet_config
 from .sampling_blocks import Upsample
 from .residual_block import ResBlock
 
@@ -19,8 +18,8 @@ class DecoderBlock(nn.Module):
         in_channels: int,
         out_channels: int,
         skip_channels: int,
-        time_embed_dim: int = unet_config.TIME_EMBED_DIM,
-        num_res_blocks: int = unet_config.NUM_RES_BLOCKS,
+        time_embed_dim: int,
+        num_res_blocks: int,
         upsample: bool = True
     ):
         super().__init__()

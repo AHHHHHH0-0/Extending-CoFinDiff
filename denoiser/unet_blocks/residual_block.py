@@ -19,8 +19,8 @@ class ResBlock(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        time_embed_dim: int = unet_config.TIME_EMBED_DIM,
-        kernel_size: int = unet_config.RES_BLOCK_KERNEL_SIZE,
+        time_embed_dim: int,
+        kernel_size: int,
         num_groups: int = unet_config.RES_BLOCK_NUM_GROUPS,
         dropout: float = unet_config.RES_BLOCK_DROPOUT
     ):

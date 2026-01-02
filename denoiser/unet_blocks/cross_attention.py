@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from config import unet_config
-
 
 class SpatialCrossAttention(nn.Module):
     """
@@ -17,17 +15,15 @@ class SpatialCrossAttention(nn.Module):
         self,
         channels: int,
         context_dim: int,
-        num_heads: int = unet_config.CROSS_ATTN_NUM_HEADS,
-        scale: float = unet_config.CROSS_ATTN_SCALE
+        num_heads: int,
+        scale: float
     ):
         super().__init__()
-        
-        self.head_dim = channels // num_heads
 
         # Group normalization before attention
         self.norm = nn.GroupNorm(
             num_groups=min(32, channels),
-            num_channels=channels,
+            num_heads=num_heads,
             eps=1e-6
         )
         

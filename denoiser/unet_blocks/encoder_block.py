@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-from config import unet_config
 from .residual_block import ResBlock
 from .sampling_blocks import Downsample
 
@@ -18,8 +17,8 @@ class EncoderBlock(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        time_embed_dim: int = unet_config.TIME_EMBED_DIM,
-        num_res_blocks: int = unet_config.NUM_RES_BLOCKS,
+        time_embed_dim: int,
+        num_res_blocks: int,
         downsample: bool = True
     ):
         super().__init__()
@@ -56,3 +55,4 @@ class EncoderBlock(nn.Module):
         h = self.downsample(h)
         
         return h, skip
+        
