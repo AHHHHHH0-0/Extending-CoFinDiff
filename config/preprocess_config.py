@@ -7,8 +7,8 @@ T = 256 # power of 2 for the Haar wavelet transform
 RETURN_SCALE_FACTOR = 100.0
 
 # Condition encoder parameters
-COND_HIDDEN_DIM = 64 
-COND_TOKEN_DIM = 20  
-
-
-NUM_CONDITION_TOKENS = 4  # trend, realized_vol, interest_rate, market volatility index
+NUM_CONDITION_SCALARS = 4
+COND_FC_HIDDEN_DIM = 256
+COND_1D_CHANNELS = 64
+COND_2D_CHANNELS = 32
+COND_OUTPUT_DIM = 20 # must match COND_CONTEXT_DIM in denoiser_config
