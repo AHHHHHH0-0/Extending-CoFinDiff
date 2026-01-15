@@ -83,21 +83,21 @@ class ConditionEncoder(nn.Module):
         x = torch.cat([trend, realized_vol, interest_rate, volatility_index], dim=1)
         
         # FC: (B, 4) → (B, H*W)
-        x = self.fc(x)  # (B, 256)
+        x = self.fc(x)
         
-        # Reshape: (B, 256) → (B, 1, 256)
-        x = x.unsqueeze(1)  # (B, 1, 256)
+        # Reshape: (B, cond_fc_hidden_dim) → (B, 1, cond_fc_hidden_dim)
+        x = x.unsqueeze(1)
         
-        # 1D Conv: (B, 1, 256) → (B, cond_1d_channels, 256)
-        x = self.conv1d(x)  # (B, 64, 256)
+        # 1D Conv: (B, 1, cond_fc_hidden_dim) → (B, cond_1d_channels, cond_fc_hidden_dim)
+        x = self.conv1d(x)
         
         # Reshape: (B, cond_1d_channels, 256) → (B, cond_1d_channels, H, W)
-        x = x.view(B, -1, self.H, self.W)  # (B, 64, 16, 16)
+        x = x.view(B, -1, self.H, self.W) 
         
         # 2D Conv: (B, cond_1d_channels, H, W) → (B, cond_output_dim, H, W)
-        x = self.conv2d(x)  # (B, 20, 16, 16)
+        x = self.conv2d(x) 
         
-        # Flatten spatial dimensions: (B, cond_output_dim, H, W) → (B, cond_output_dim, H*W)
-        x = x.view(B, x.size(1), -1).transpose(1, 2)  # (B, cond_output_dim, H*W)
+        # Flatten spatial dimensions: (B, cond_output_dim, H, W) → (B, H*W, cond_output_dim)
+        x = x.view(B, x.size(1), -1).transpose(1, 2)
         
         return x
