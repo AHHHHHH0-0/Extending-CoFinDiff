@@ -12,7 +12,7 @@ class ResBlock(nn.Module):
     Architecture:
         x -> Conv2D -> GroupNorm -> SiLU -> (+time_emb) -> Conv2D -> GroupNorm -> Dropout -> SiLU -> (+x)
     
-    Follows standard DDPM ResBlock design with pre-activation.
+    Follows the diagram with Linear + Conv for timestep condition processing.
     """
     
     def __init__(
@@ -38,8 +38,9 @@ class ResBlock(nn.Module):
         )
         self.norm1 = nn.GroupNorm(num_groups, out_channels)
         
-        # Timestep projection
-        self.time_proj = nn.Linear(time_embed_dim, out_channels)
+        # Timestep projection: Linear + Conv 
+        self.time_linear = nn.Linear(time_embed_dim, out_channels)
+        self.time_conv = nn.Conv2d(out_channels, out_channels, kernel_size=1)
         
         # Second convolution block
         self.conv2 = nn.Conv2d(
@@ -73,8 +74,9 @@ class ResBlock(nn.Module):
         h = self.norm1(h)
         h = F.silu(h)
         
-        # Add timestep embedding
-        time_proj = self.time_proj(time_emb)[:, :, None, None]
+        # Timestep embedding
+        time_proj = self.time_linear(time_emb)
+        time_proj = self.time_conv(time_proj)
         h = h + time_proj
         
         # Second conv block
