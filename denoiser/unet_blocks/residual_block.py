@@ -11,8 +11,6 @@ class ResBlock(nn.Module):
     
     Architecture:
         x -> Conv2D -> GroupNorm -> SiLU -> (+time_emb) -> Conv2D -> GroupNorm -> Dropout -> SiLU -> (+x)
-    
-    Follows the diagram with Linear + Conv for timestep condition processing.
     """
     
     def __init__(
