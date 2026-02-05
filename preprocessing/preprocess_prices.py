@@ -30,10 +30,10 @@ def preprocess_prices(prices: np.ndarray, start:int) -> np.ndarray:
     
     # Convert to torch tensor for wavelet transform
     standardized_tensor = torch.from_numpy(standardized_returns).float()
-    standardized_tensor = standardized_tensor.unsqueeze(0)
     
     # Apply Haar wavelet transform
     wavelet_transform = HaarWaveletTransform()
     wavelet_coeffs = wavelet_transform(standardized_tensor)
+    wavelet_coeffs = wavelet_coeffs.squeeze(0)
     
     return wavelet_coeffs
