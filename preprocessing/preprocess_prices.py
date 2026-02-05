@@ -22,6 +22,10 @@ def preprocess_prices(prices: np.ndarray, start:int) -> np.ndarray:
     
     # Take T timesteps starting from start
     log_returns_windowed = log_returns[start:start+preprocess_config.T]
+
+    # Get trend and realized vol
+    trend = _get_trend(log_returns_windowed)
+    realized_vol = _get_realized_vol(log_returns_windowed)
     
     # Standardize
     mean = log_returns_windowed.mean()
@@ -36,4 +40,20 @@ def preprocess_prices(prices: np.ndarray, start:int) -> np.ndarray:
     wavelet_coeffs = wavelet_transform(standardized_tensor)
     wavelet_coeffs = wavelet_coeffs.squeeze(0)
     
-    return wavelet_coeffs
+    return wavelet_coeffs, trend, realized_vol
+
+def _get_trend(log_returns: np.ndarray) -> float:
+    """
+    Get the trend of the log returns.
+    """
+    log_returns = log_returns * 100
+    trend = log_returns.sum()
+    return trend
+
+def _get_realized_vol(log_returns: np.ndarray) -> float:
+    """
+    Get the realized volatility of the wavelet coefficients.
+    """
+    log_returns = log_returns * 100
+    realized_vol = (log_returns ** 2).sum()
+    return realized_vol
