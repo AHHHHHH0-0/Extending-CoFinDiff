@@ -4,7 +4,7 @@ Haar wavelet transform utilities for converting 1D time series to 2D images.
 
 import torch
 import torch.nn as nn
-import numpy as np
+import math
 from typing import Tuple
 
 from config import preprocess_config
@@ -59,8 +59,9 @@ class HaarWaveletTransform(nn.Module):
         odd = x[..., 1::2]
         
         # Approximation (low-pass) and detail (high-pass) coefficients
-        approx = (even + odd) / np.sqrt(2)
-        detail = (even - odd) / np.sqrt(2)
+        sqrt_2 = math.sqrt(2)
+        approx = (even + odd) / sqrt_2
+        detail = (even - odd) / sqrt_2
         
         return torch.cat([approx, detail], dim=-1)
     
@@ -75,8 +76,9 @@ class HaarWaveletTransform(nn.Module):
         detail = x[..., half:]
         
         # Reconstruct even and odd
-        even = (approx + detail) / np.sqrt(2)
-        odd = (approx - detail) / np.sqrt(2)
+        sqrt_2 = math.sqrt(2)
+        even = (approx + detail) / sqrt_2
+        odd = (approx - detail) / sqrt_2
         
         # Interleave
         result = torch.zeros_like(x)
