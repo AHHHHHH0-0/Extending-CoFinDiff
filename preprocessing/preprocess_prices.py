@@ -31,12 +31,7 @@ def preprocess_prices(prices: torch.Tensor, start: int) -> tuple:
     std = log_returns_windowed.std()
     standardized_returns = (log_returns_windowed - mean) / std
 
-    # Apply Haar wavelet transform
-    wavelet_transform = HaarWaveletTransform()
-    wavelet_coeffs = wavelet_transform(standardized_returns)
-    wavelet_coeffs = wavelet_coeffs.squeeze(0)
-    
-    return wavelet_coeffs, trend, realized_vol
+    return standardized_returns, trend, realized_vol
 
 def _get_trend(log_returns: torch.Tensor) -> float:
     """
