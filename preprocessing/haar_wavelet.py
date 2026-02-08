@@ -31,7 +31,7 @@ class HaarWaveletTransform(nn.Module):
         Transform 1D sequence to 2D image.
         """
         # Apply multi-level Haar transform
-        x_haar = self._multilevel_haar_transform(x, self.levels)
+        x_haar = self._multilevel_haar_transform(x)
         
         # Reshape to 2D
         x_2d = x_haar.reshape(-1, self.target_shape[0], self.target_shape[1])
@@ -46,7 +46,7 @@ class HaarWaveletTransform(nn.Module):
         x_1d = x.reshape(-1, self.target_shape[0] * self.target_shape[1])
         
         # Apply inverse Haar transform
-        x_reconstructed = self._inverse_multilevel_haar_transform(x_1d, self.levels)
+        x_reconstructed = self._inverse_multilevel_haar_transform(x_1d)
         
         return x_reconstructed
         
@@ -87,31 +87,30 @@ class HaarWaveletTransform(nn.Module):
         
         return result
     
-    def _multilevel_haar_transform(self, x: torch.Tensor, levels: int) -> torch.Tensor:
+    def _multilevel_haar_transform(self, x: torch.Tensor) -> torch.Tensor:
         """
         Apply multi-level 1D Haar wavelet decomposition.
         """
         result = x.clone()
         
         # Apply transform at each level
-        for level in range(levels):
+        for level in range(self.levels):
             # Only transform the approximation coefficients from previous level
             length = self.time_steps // (2 ** level)
             result[..., :length] = self._haar_transform_1d(result[..., :length])
         
         return result
 
-    def _inverse_multilevel_haar_transform(self, x: torch.Tensor, levels: int) -> torch.Tensor:
+    def _inverse_multilevel_haar_transform(self, x: torch.Tensor) -> torch.Tensor:
         """
         Apply inverse multi-level 1D Haar wavelet reconstruction.
         """
         result = x.clone()
         
         # Apply inverse transform at each level in reverse order
-        for level in range(levels - 1, -1, -1):
+        for level in range(self.levels - 1, -1, -1):
             length = self.time_steps // (2 ** level)
             result[..., :length] = self._inverse_haar_transform_1d(result[..., :length])
         
         return result
     
-

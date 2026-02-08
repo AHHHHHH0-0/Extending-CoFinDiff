@@ -4,7 +4,6 @@ Preprocess stock prices into wavelet coefficients.
 
 import torch
 
-from preprocessing.haar_wavelet import HaarWaveletTransform
 from config import preprocess_config
 
 
