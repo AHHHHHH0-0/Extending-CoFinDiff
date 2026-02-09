@@ -10,11 +10,11 @@ from config import diffusion_config, project_config
 
 
 def get_beta_schedule(
+    device: str,
     schedule: str = diffusion_config.BETA_SCHEDULE,
     timesteps: int = diffusion_config.TIMESTEPS,
     beta_start: float = diffusion_config.BETA_START,
     beta_end: float = diffusion_config.BETA_END,
-    device: str = project_config.DEVICE
 ) -> torch.Tensor:
     """
     Get noise schedule (beta values) for diffusion.

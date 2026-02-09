@@ -17,22 +17,22 @@ class Diffusion:
     
     def __init__(
         self,
+        device: str,
         timesteps: int = diffusion_config.TIMESTEPS,
         beta_schedule: str = diffusion_config.BETA_SCHEDULE,
         beta_start: float = diffusion_config.BETA_START,
         beta_end: float = diffusion_config.BETA_END,
-        device: str = project_config.DEVICE
     ):
         self.T = timesteps
         self.device = device
         
         # Get betas and alphas
         self.betas = get_beta_schedule(
+            device=device,
             schedule=beta_schedule,
             timesteps=timesteps,
             beta_start=beta_start,
             beta_end=beta_end,
-            device=device
         )
         self.alphas = 1.0 - self.betas
         self.alphas_bar = torch.cumprod(self.alphas, dim=0)
