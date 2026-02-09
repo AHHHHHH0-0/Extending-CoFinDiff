@@ -6,15 +6,15 @@ Utility functions.
 import math
 import torch
 
-from config.config import config
+from config import diffusion_config, project_config
 
 
 def get_beta_schedule(
-    schedule: str = config.BETA_SCHEDULE,
-    timesteps: int = config.TIMESTEPS,
-    beta_start: float = config.BETA_START,
-    beta_end: float = config.BETA_END,
-    device: str = config.DEVICE
+    schedule: str = diffusion_config.BETA_SCHEDULE,
+    timesteps: int = diffusion_config.TIMESTEPS,
+    beta_start: float = diffusion_config.BETA_START,
+    beta_end: float = diffusion_config.BETA_END,
+    device: str = project_config.DEVICE
 ) -> torch.Tensor:
     """
     Get noise schedule (beta values) for diffusion.

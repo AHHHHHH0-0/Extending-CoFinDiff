@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from config import unet_config
+from config import denoiser_config
 
 
 class ResBlock(nn.Module):
@@ -19,8 +19,8 @@ class ResBlock(nn.Module):
         out_channels: int,
         time_embed_dim: int,
         kernel_size: int,
-        num_groups: int = unet_config.RES_BLOCK_NUM_GROUPS,
-        dropout: float = unet_config.RES_BLOCK_DROPOUT
+        num_groups: int = denoiser_config.RES_BLOCK_NUM_GROUPS,
+        dropout: float = denoiser_config.RES_BLOCK_DROPOUT
     ):
         super().__init__()
         
