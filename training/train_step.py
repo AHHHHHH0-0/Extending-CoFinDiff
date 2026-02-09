@@ -4,51 +4,48 @@ Train a single step of the model.
 
 import torch
 import torch.nn as nn
+from typing import Dict
 
-from cofindiff.diffusion import Diffusion
+from diffusion.diffusion import Diffusion
+from config import project_config
+from config import training_config
 
-
-def train_step(
-    model: nn.Module,
+def train_step_unet(
+    denoiser: nn.Module,
     diffusion: Diffusion,
-    x0: torch.Tensor,
-    macro: torch.Tensor,
-    macro_encoder: nn.Module,
+    x: torch.Tensor,
+    conditions: Dict[str, torch.Tensor],
+    cond_encoder: nn.Module,
     optimizer: torch.optim.Optimizer,
-    p_uncond: float = 0.1
+    p_uncond: float = training_config.P_UNCOND,
+    device: str = project_config.DEVICE
 ) -> float:
     """
-    Perform a single training step with classifier-free guidance dropout.
-    
-    Args:
-        model: Denoiser model
-        diffusion: Diffusion object
-        x0: Clean data of shape (B, C, T)
-        macro: Macro features of shape (B, macro_dim)
-        macro_encoder: Macro encoder network
-        optimizer: Optimizer
-        p_uncond: Probability of dropping conditioning for CFG training
-        
-    Returns:
-        Loss value (float)
+    Single training step with classifier-free guidance dropout.
     """
-    B = x0.size(0)
-    device = x0.device
+    
+    B = x.size(0)
     
     # Sample random timesteps
     t = torch.randint(0, diffusion.T, (B,), device=device)
     
-    # Encode macro features
-    cond_emb = macro_encoder(macro)
+    # Encode conditions
+    cond_tokens = cond_encoder(
+        trend=conditions['trend'],
+        realized_vol=conditions['realized_vol'],
+        interest_rate=conditions['interest_rate'],
+        volatility_index=conditions['volatility_index']
+    )
     
-    # Classifier-free guidance: randomly drop conditioning
+    # Classifier-free guidance dropout
     if p_uncond > 0:
-        mask = (torch.rand(B, device=device) < p_uncond).float().unsqueeze(1)
-        cond_emb = cond_emb * (1 - mask)
+        uncond_mask = torch.rand(B, device=device) < p_uncond
+        uncond_mask = uncond_mask.view(B, 1, 1)
+        cond_tokens = cond_tokens * (~uncond_mask).float()
     
-    # Compute loss
+    # Compute loss and backprop
     optimizer.zero_grad()
-    loss = diffusion.loss(model, x0, t, cond_emb)
+    loss = diffusion.loss(denoiser, x, t, cond_tokens)
     loss.backward()
     optimizer.step()
     
