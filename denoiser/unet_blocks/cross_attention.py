@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from config import denoiser_config
+
 
 class SpatialCrossAttention(nn.Module):
     """
@@ -16,15 +18,15 @@ class SpatialCrossAttention(nn.Module):
         channels: int,
         context_dim: int,
         num_heads: int,
-        scale: float
+        scale: float = denoiser_config.CROSS_ATTN_SCALE
     ):
         super().__init__()
 
         # Group normalization before attention
         self.norm = nn.GroupNorm(
             num_groups=min(32, channels),
-            num_heads=num_heads,
-            eps=1e-6
+            num_channels=channels,
+            eps=1e-6, 
         )
         
         # Cross-attention layer
