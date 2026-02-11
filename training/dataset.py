@@ -19,12 +19,12 @@ class FinancialDataset(Dataset):
             self.data = json.load(f)
         
         # Get dimensions
-        self.num_assets = len(self.data[0]['returns_2d'])
-        self.H = self.data[0]['returns_2d'].shape[1]
-        self.W = self.data[0]['returns_2d'].shape[2]
+        self.num_assets = len(self.data)
+        self.H = len(self.data[0]['returns_2d'])
+        self.W = len(self.data[0]['returns_2d'][0])
         
-        print(f"Loaded {len(self.data)} samples from {json_path}")
-        print(f"Data shape: {self.num_assets} assets x {self.H}x{self.W}")
+        print(f"Loaded {self.num_assets} assets from {json_path}")
+        print(f"Data shape: {self.H}x{self.W}")
     
     def __len__(self) -> int:
         return len(self.data)
