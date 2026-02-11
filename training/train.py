@@ -6,11 +6,11 @@ import torch
 import torch.nn as nn
 from typing import Dict
 
-from diffusion.diffusion import Diffusion
-from config import training_config
+from diffusion import Diffusion
+from config import training_config, project_config
+
 
 def train_step(
-    device: str,
     denoiser: nn.Module,
     diffusion: Diffusion,
     x: torch.Tensor,
@@ -18,6 +18,7 @@ def train_step(
     cond_encoder: nn.Module,
     optimizer: torch.optim.Optimizer,
     p_uncond: float = training_config.P_UNCOND,
+    device: str = project_config.DEVICE,
 ) -> float:
     """
     Single training step with classifier-free guidance dropout.
