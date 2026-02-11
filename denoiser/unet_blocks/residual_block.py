@@ -18,7 +18,7 @@ class ResBlock(nn.Module):
         in_channels: int,
         out_channels: int,
         time_embed_dim: int,
-        kernel_size: int,
+        kernel_size: int = denoiser_config.RES_BLOCK_KERNEL_SIZE,
         num_groups: int = denoiser_config.RES_BLOCK_NUM_GROUPS,
         dropout: float = denoiser_config.RES_BLOCK_DROPOUT
     ):

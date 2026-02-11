@@ -17,7 +17,7 @@ class Diffusion:
     
     def __init__(
         self,
-        device: str,
+        device: str = project_config.DEVICE,
         timesteps: int = diffusion_config.TIMESTEPS,
         beta_schedule: str = diffusion_config.BETA_SCHEDULE,
         beta_start: float = diffusion_config.BETA_START,
