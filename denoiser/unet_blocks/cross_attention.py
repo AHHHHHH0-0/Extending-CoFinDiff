@@ -25,7 +25,7 @@ class SpatialCrossAttention(nn.Module):
         # Group normalization before attention
         self.norm = nn.GroupNorm(
             num_groups=min(32, channels),
-            num_heads=num_heads,
+            channels=channels,
             eps=1e-6, 
         )
         
