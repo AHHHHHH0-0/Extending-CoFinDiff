@@ -1,3 +1,7 @@
+"""
+Configuration for the diffusion process.
+"""
+
 # Diffusion parameters
 TIMESTEPS = 1000
 OBJECTIVE = 'pred_noise'

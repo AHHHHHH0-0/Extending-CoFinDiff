@@ -1,3 +1,7 @@
+"""
+Configuration for data preprocessing.
+"""
+
 # Haar wavelet parameters
 HAAR_WAVELET_LEVELS = 6 # assert log2(T) == levels
 TARGET_SHAPE = (8, 8) # assert H * W == T
