@@ -25,7 +25,7 @@ class SpatialCrossAttention(nn.Module):
         # Group normalization before attention
         self.norm = nn.GroupNorm(
             num_groups=min(32, channels),
-            num_channels=channels,
+            num_heads=num_heads,
             eps=1e-6, 
         )
         
@@ -88,8 +88,7 @@ class _MultiHeadCrossAttention(nn.Module):
             f"Query_dim ({query_dim}) must be divisible by num_heads ({num_heads})"
         self.head_dim = query_dim // num_heads
 
-        # Inner dimension
-        inner_dim = num_heads * self.head_dim
+        inner_dim = query_dim // num_heads # same as head_dim for stable diffusion
         
         # Linear projections
         self.to_q = nn.Linear(query_dim, inner_dim, bias=False)
