@@ -72,10 +72,11 @@ class ResBlock(nn.Module):
         h = self.norm1(h)
         h = F.silu(h)
         
-        # Timestep embedding
-        time_proj = self.time_linear(time_emb)
-        time_proj = self.time_conv(time_proj)
-        h = h + time_proj
+        # Timestep embedding: reshape from (B, C) to (B, C, 1, 1) for broadcasting
+        time_proj = self.time_linear(time_emb)  # (B, out_channels)
+        time_proj = time_proj.unsqueeze(-1).unsqueeze(-1)  # (B, out_channels, 1, 1)
+        time_proj = self.time_conv(time_proj)  # (B, out_channels, 1, 1)
+        h = h + time_proj  # Broadcasts across spatial dimensions
         
         # Second conv block
         h = self.conv2(h)

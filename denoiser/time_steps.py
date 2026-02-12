@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import math
 
 
-def timestep_embedding(t: torch.Tensor, dim: int, max_period: int) -> torch.Tensor:
+def timestep_embedding(t: torch.Tensor, dim: int, max_period: int = 10000) -> torch.Tensor:
     """
     Create sinusoidal timestep embeddings.
     """

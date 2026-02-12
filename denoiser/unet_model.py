@@ -78,7 +78,7 @@ class UNetDenoiser(nn.Module):
             block = DecoderBlock(
                 in_channels=channels[i],
                 out_channels=channels[i - 1],
-                skip_channels=channels[i - 1],
+                skip_channels=channels[i],
                 time_embed_dim=time_embed_dim,
                 num_res_blocks=num_res_blocks,
                 upsample=True

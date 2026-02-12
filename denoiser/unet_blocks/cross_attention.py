@@ -88,7 +88,8 @@ class _MultiHeadCrossAttention(nn.Module):
             f"Query_dim ({query_dim}) must be divisible by num_heads ({num_heads})"
         self.head_dim = query_dim // num_heads
 
-        inner_dim = query_dim // num_heads # same as head_dim for stable diffusion
+        # Inner dimension
+        inner_dim = num_heads * self.head_dim
         
         # Linear projections
         self.to_q = nn.Linear(query_dim, inner_dim, bias=False)

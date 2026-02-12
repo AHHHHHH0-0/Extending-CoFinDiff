@@ -4,8 +4,8 @@ PyTorch Dataset for loading preprocessed financial data from JSON.
 
 import json
 import torch
-from torch.utils.data import Dataset
-from typing import Dict
+from torch.utils.data import Dataset, Subset
+from typing import Dict, List
 
 
 class FinancialDataset(Dataset):
@@ -49,3 +49,6 @@ class FinancialDataset(Dataset):
             'interest_rate': interest_rate,
             'volatility_index': volatility_index
         }
+
+    def get_subset(self, indices: List[int]) -> 'Subset':
+        return Subset(self, indices)
