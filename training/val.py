@@ -28,8 +28,8 @@ def validate(
     
     with torch.no_grad():
         for batch in val_loader:
-            # Get data
-            x0 = batch['returns'].to(device)  # (B, C, H, W)
+            # Get data and add channel dimension
+            x0 = batch['returns_2d'].unsqueeze(1).to(device)  # (B, 1, H, W)
             B = x0.size(0)
             
             # Encode conditions
