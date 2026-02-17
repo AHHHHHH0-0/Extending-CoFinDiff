@@ -2,7 +2,8 @@
 Configuration for the data.
 """
 
-TICKERS = ["NVDA", "GOOG", "AAPL"]
-AV_FUNCTION = "TIME_SERIES_DAILY" # change saved json file name based on function
+TICKERS = ["NVDA", "GOOG", "AAPL", "META", "MSFT", "AMZN", "TSLA", "NFLX", "ASML", "TSM"]
+DAILY = "TIME_SERIES_DAILY"
+DAILY_ADJUSTED = "TIME_SERIES_DAILY_ADJUSTED"
 WINDOW_START = "2025-09-17"
 WINDOW_END = "2026-02-05"
