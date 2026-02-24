@@ -2,11 +2,71 @@
     "Meta Data": {
         "1. Information": "Daily Time Series with Splits and Dividend Events",
         "2. Symbol": "GOOG",
-        "3. Last Refreshed": "2026-02-13",
+        "3. Last Refreshed": "2026-02-24",
         "4. Output Size": "Full size",
         "5. Time Zone": "US/Eastern"
     },
     "Time Series (Daily)": {
+        "2026-02-24": {
+            "1. open": "310.64",
+            "2. high": "312.37",
+            "3. low": "306.09",
+            "4. close": "310.92",
+            "5. adjusted close": "310.92",
+            "6. volume": "14819039",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
+        "2026-02-23": {
+            "1. open": "319.14",
+            "2. high": "319.455",
+            "3. low": "309.99",
+            "4. close": "311.69",
+            "5. adjusted close": "311.69",
+            "6. volume": "17641176",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
+        "2026-02-20": {
+            "1. open": "304.8",
+            "2. high": "316.76",
+            "3. low": "304.42",
+            "4. close": "314.9",
+            "5. adjusted close": "314.9",
+            "6. volume": "33663143",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
+        "2026-02-19": {
+            "1. open": "302.52",
+            "2. high": "306.03",
+            "3. low": "300.67",
+            "4. close": "303.56",
+            "5. adjusted close": "303.56",
+            "6. volume": "13448627",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
+        "2026-02-18": {
+            "1. open": "302.432",
+            "2. high": "305.91",
+            "3. low": "301.98",
+            "4. close": "303.94",
+            "5. adjusted close": "303.94",
+            "6. volume": "15847701",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
+        "2026-02-17": {
+            "1. open": "300.64",
+            "2. high": "304.89",
+            "3. low": "296.9",
+            "4. close": "302.82",
+            "5. adjusted close": "302.82",
+            "6. volume": "23750758",
+            "7. dividend amount": "0.0000",
+            "8. split coefficient": "1.0"
+        },
         "2026-02-13": {
             "1. open": "307.985",
             "2. high": "308.89",
