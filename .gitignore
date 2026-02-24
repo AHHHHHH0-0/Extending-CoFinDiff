@@ -1,6 +1,11 @@
+# Environment 
 .env
 .DS_Store
 __pycache__/
 
 # Wandb
 wandb/
+
+# Data
+data/preprocessed/
+data/upsampled/
