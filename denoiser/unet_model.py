@@ -43,6 +43,7 @@ class UNetDenoiser(nn.Module):
         
         # Encoder
         self.encoder_blocks = nn.ModuleList()
+        self.encoder_attn_blocks = nn.ModuleList()
         for i in range(len(channels) - 1):
             block = EncoderBlock(
                 in_channels=channels[i],
@@ -51,7 +52,13 @@ class UNetDenoiser(nn.Module):
                 num_res_blocks=num_res_blocks,
                 downsample=True
             )
+            attn = SpatialCrossAttention(
+                channels=channels[i + 1],
+                context_dim=cond_context_dim,
+                num_heads=num_heads
+            )
             self.encoder_blocks.append(block)
+            self.encoder_attn_blocks.append(attn)
         
         # Bottleneck with cross-attention
         self.bottleneck_res1 = ResBlock(
@@ -74,6 +81,7 @@ class UNetDenoiser(nn.Module):
         
         # Decoder
         self.decoder_blocks = nn.ModuleList()
+        self.decoder_attn_blocks = nn.ModuleList()
         for i in range(len(channels) - 1, 0, -1):
             block = DecoderBlock(
                 in_channels=channels[i],
@@ -83,7 +91,13 @@ class UNetDenoiser(nn.Module):
                 num_res_blocks=num_res_blocks,
                 upsample=True
             )
+            attn = SpatialCrossAttention(
+                channels=channels[i - 1],
+                context_dim=cond_context_dim,
+                num_heads=num_heads
+            )
             self.decoder_blocks.append(block)
+            self.decoder_attn_blocks.append(attn)
         
         # Output convolution
         self.output_conv = nn.Sequential(
@@ -112,8 +126,9 @@ class UNetDenoiser(nn.Module):
         
         # Encoder with skip connections
         skips = []
-        for block in self.encoder_blocks:
+        for block, attn in zip(self.encoder_blocks, self.encoder_attn_blocks):
             h, skip = block(h, t_emb)
+            h = attn(h, cond_tokens)
             skips.append(skip)
         
         # Bottleneck with cross-attention
@@ -122,9 +137,10 @@ class UNetDenoiser(nn.Module):
         h = self.bottleneck_res2(h, t_emb)
         
         # Decoder with skip connections
-        for block in self.decoder_blocks:
+        for block, attn in zip(self.decoder_blocks, self.decoder_attn_blocks):
             skip = skips.pop()
             h = block(h, skip, t_emb)
+            h = attn(h, cond_tokens)
         
         # Output
         return self.output_conv(h)
