@@ -9,7 +9,7 @@ TARGET_SHAPE = (8, 8) # assert H * W == T
 # Data preprocessing parameters
 T = 64 # power of 2 for the Haar wavelet transform
 RETURN_SCALE_FACTOR = 100.0
-STRIDE = 32
+STRIDE = 64
 
 # Condition encoder parameters
 NUM_CONDITION_SCALARS = 4
