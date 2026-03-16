@@ -32,6 +32,9 @@ class ConditionEncoder(nn.Module):
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
         
+        # Normalize each condition independently across the batch
+        self.input_norm = nn.BatchNorm1d(num_condition_scalars)
+        
         # FC layer
         self.fc = nn.Sequential(
             nn.Linear(num_condition_scalars, cond_fc_hidden_dim),
@@ -81,6 +84,7 @@ class ConditionEncoder(nn.Module):
         
         # Concatenate: (B, 4)
         x = torch.cat([trend, realized_vol, interest_rate, volatility_index], dim=1)
+        x = self.input_norm(x)
         
         # FC: (B, 4) → (B, H*W)
         x = self.fc(x)
