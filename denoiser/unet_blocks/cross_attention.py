@@ -57,8 +57,7 @@ class SpatialCrossAttention(nn.Module):
         # Reshape back: (B, H*W, C) -> (B, C, H, W)
         out = out.transpose(1, 2).reshape(B, C, H, W)
         
-        # Residual connection happens inside CrossAttention, but we add to original input
-        return x + out
+        return out
 
 
 class _MultiHeadCrossAttention(nn.Module):

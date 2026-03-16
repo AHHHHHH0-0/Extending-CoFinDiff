@@ -69,7 +69,7 @@ class HaarWaveletTransform(nn.Module):
         """
         Apply inverse 1D Haar wavelet transform.
         """
-        half = self.time_steps // 2
+        half = x.shape[-1] // 2
         
         # Split into approximation and detail
         approx = x[..., :half]
