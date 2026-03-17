@@ -11,8 +11,8 @@ T = 64 # power of 2 for the Haar wavelet transform
 RETURN_SCALE_FACTOR = 100.0
 STRIDE = 64
 
-# Condition encoder parameters
-NUM_CONDITION_SCALARS = 4
+# Micro condition encoder parameters
+NUM_MICRO_SCALARS = 2
 COND_FC_HIDDEN_DIM = 256
 COND_1D_CHANNELS = 64
 COND_2D_CHANNELS = 32

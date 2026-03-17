@@ -1,10 +1,6 @@
 """
-Condition encoder for cross-attention conditioning.
-- trend
-- realized volatility
-- interest rate
-- volatility index
-Concatenate 4 scalars → FC → 1D Conv → 2D Conv → Spatial representation (H, W, context_dim)
+Micro-economic condition encoder for cross-attention conditioning (Trend, Realized Volatility).
+Concatenate 2 scalars -> FC -> 1D Conv -> 2D Conv -> Spatial tokens (B, H*W, cond_output_dim)
 """
 
 import torch
@@ -13,14 +9,14 @@ import torch.nn as nn
 from config import preprocess_config
 
 
-class ConditionEncoder(nn.Module):
+class MicroConditionEncoder(nn.Module):
     """
-    Encode 4 scalar conditions into spatial tokens for cross-attention.
+    Encode trend and realized volatility into spatial tokens for cross-attention conditioning.
     """
     
     def __init__(
         self,
-        num_condition_scalars: int = preprocess_config.NUM_CONDITION_SCALARS,
+        num_micro_scalars: int = preprocess_config.NUM_MICRO_SCALARS,
         cond_fc_hidden_dim: int = preprocess_config.COND_FC_HIDDEN_DIM,
         cond_1d_channels: int = preprocess_config.COND_1D_CHANNELS,
         cond_2d_channels: int = preprocess_config.COND_2D_CHANNELS,
@@ -32,14 +28,14 @@ class ConditionEncoder(nn.Module):
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
         
-        # FC layer
+        # FC layer: (B, 2) -> (B, H*W)
         self.fc = nn.Sequential(
-            nn.Linear(num_condition_scalars, cond_fc_hidden_dim),
+            nn.Linear(num_micro_scalars, cond_fc_hidden_dim),
             nn.SiLU(),
             nn.Linear(cond_fc_hidden_dim, self.spatial_size)
         )
         
-        # 1D Conv layer
+        # 1D Conv layer: (B, 1, H*W) -> (B, cond_1d_channels, H*W)
         self.conv1d = nn.Sequential(
             nn.Conv1d(
                 in_channels=1,
@@ -51,7 +47,7 @@ class ConditionEncoder(nn.Module):
             nn.SiLU()
         )
         
-        # 2D Conv layer
+        # 2D Conv layer: (B, cond_1d_channels, H, W) -> (B, cond_output_dim, H, W)
         self.conv2d = nn.Sequential(
             nn.Conv2d(
                 in_channels=cond_1d_channels,
@@ -73,16 +69,14 @@ class ConditionEncoder(nn.Module):
         self,
         trend: torch.Tensor,
         realized_vol: torch.Tensor,
-        interest_rate: torch.Tensor,
-        volatility_index: torch.Tensor
     ) -> torch.Tensor:
 
         B = trend.size(0)
         
-        # Concatenate: (B, 4)
-        x = torch.cat([trend, realized_vol, interest_rate, volatility_index], dim=1)
+        # Concatenate: (B, 2)
+        x = torch.cat([trend, realized_vol], dim=1)
         
-        # FC: (B, 4) → (B, H*W)
+        # FC: (B, 2) -> (B, H*W)
         x = self.fc(x)
         
         # Reshape: (B, cond_fc_hidden_dim) → (B, 1, cond_fc_hidden_dim)
