@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from config import diffusion_config, project_config
 from .utils import get_beta_schedule
@@ -42,7 +42,8 @@ class Diffusion:
         model: nn.Module,
         x0: torch.Tensor,
         t: torch.Tensor,
-        cond_emb: torch.Tensor,
+        micro_cond_tokens: torch.Tensor,
+        macro_emb: torch.Tensor,
         noise: Optional[torch.Tensor] = None
     ) -> torch.Tensor:
         """
@@ -56,7 +57,7 @@ class Diffusion:
         x_t = self._q_sample(x0, t, noise)
         
         # Predict noise
-        pred = model(x_t, t, cond_emb)
+        pred = model(x_t, t, micro_cond_tokens, macro_emb)
         
         # MSE loss
         return F.mse_loss(pred, noise)
@@ -66,7 +67,8 @@ class Diffusion:
         self,
         model: nn.Module,
         shape: Tuple[int, ...],
-        cond_emb: torch.Tensor,
+        micro_cond_tokens: torch.Tensor,
+        macro_emb: torch.Tensor,
         guidance_scale: float = diffusion_config.GUIDANCE_SCALE,
         return_trajectory: bool = diffusion_config.RETURN_TRAJECTORY
     ) -> Union[torch.Tensor, Tuple[torch.Tensor, List[torch.Tensor]]]:
@@ -80,7 +82,7 @@ class Diffusion:
         
         # Reverse diffusion
         for t in reversed(range(self.T)):
-            x = self._p_sample(model, x, t, cond_emb, guidance_scale)
+            x = self._p_sample(model, x, t, micro_cond_tokens, macro_emb, guidance_scale)
             if return_trajectory:
                 trajectory.append(x)
                 
@@ -117,7 +119,8 @@ class Diffusion:
         model: nn.Module,
         x: torch.Tensor,
         t: int,
-        cond_emb: torch.Tensor,
+        micro_cond_tokens: torch.Tensor,
+        macro_emb: torch.Tensor,
         guidance_scale: float
     ) -> torch.Tensor:
         """
@@ -129,11 +132,15 @@ class Diffusion:
         
         # Predict noise (conditioned and unconditioned)
         if guidance_scale != 1.0:
-            eps_cond = model(x, t_batch, cond_emb)
-            eps_uncond = model(x, t_batch, torch.zeros_like(cond_emb))
+            eps_cond = model(x, t_batch, micro_cond_tokens, macro_emb)
+            eps_uncond = model(
+                x, t_batch,
+                torch.zeros_like(micro_cond_tokens),
+                torch.zeros_like(macro_emb),
+            )
             eps = eps_uncond + guidance_scale * (eps_cond - eps_uncond)
         else:
-            eps = model(x, t_batch, cond_emb)
+            eps = model(x, t_batch, micro_cond_tokens, macro_emb)
             
         # Coefficients
         alpha = self.alphas[t]
@@ -150,4 +157,3 @@ class Diffusion:
             mean += std * noise
         
         return mean
-    
