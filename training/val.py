@@ -38,11 +38,17 @@ def validate(
                 realized_vol=batch['realized_vol'].to(device),
             )
             
+            # Stack macro conditions for FiLM: (B, 2)
+            macro_emb = torch.cat([
+                batch['interest_rate'].to(device),
+                batch['volatility_index'].to(device),
+            ], dim=1)
+            
             # Sample random timesteps
             t = torch.randint(0, diffusion.T, (B,), device=device)
             
             # Compute loss
-            loss = diffusion.loss(denoiser, x0, t, micro_cond_tokens)
+            loss = diffusion.loss(denoiser, x0, t, micro_cond_tokens, macro_emb)
             total_loss += loss.item()
             num_batches += 1
     

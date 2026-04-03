@@ -35,15 +35,21 @@ def train_step(
         realized_vol=conditions['realized_vol'],
     )
     
-    # Classifier-free guidance dropout
+    # Stack macro conditions for FiLM: (B, 2)
+    macro_emb = torch.cat([
+        conditions['interest_rate'],
+        conditions['volatility_index'],
+    ], dim=1)
+    
+    # Classifier-free guidance dropout (zero out both paths together)
     if p_uncond > 0:
         uncond_mask = torch.rand(B, device=device) < p_uncond
-        uncond_mask = uncond_mask.view(B, 1, 1)
-        micro_cond_tokens = micro_cond_tokens * (~uncond_mask).float()
+        micro_cond_tokens = micro_cond_tokens * (~uncond_mask).view(B, 1, 1).float()
+        macro_emb = macro_emb * (~uncond_mask).view(B, 1).float()
     
     # Compute loss and backprop
     optimizer.zero_grad()
-    loss = diffusion.loss(denoiser, x, t, micro_cond_tokens)
+    loss = diffusion.loss(denoiser, x, t, micro_cond_tokens, macro_emb)
     loss.backward()
     optimizer.step()
     

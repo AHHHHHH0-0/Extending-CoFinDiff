@@ -79,13 +79,13 @@ class MicroConditionEncoder(nn.Module):
         # FC: (B, 2) -> (B, H*W)
         x = self.fc(x)
         
-        # Reshape: (B, cond_fc_hidden_dim) → (B, 1, cond_fc_hidden_dim)
+        # Reshape: (B, H*W) → (B, 1, H*W)
         x = x.unsqueeze(1)
         
-        # 1D Conv: (B, 1, cond_fc_hidden_dim) → (B, cond_1d_channels, cond_fc_hidden_dim)
+        # 1D Conv: (B, 1, H*W) → (B, cond_1d_channels, H*W)
         x = self.conv1d(x)
         
-        # Reshape: (B, cond_1d_channels, 256) → (B, cond_1d_channels, H, W)
+        # Reshape: (B, cond_1d_channels, H*W) → (B, cond_1d_channels, H, W)
         x = x.view(B, -1, self.H, self.W) 
         
         # 2D Conv: (B, cond_1d_channels, H, W) → (B, cond_output_dim, H, W)
