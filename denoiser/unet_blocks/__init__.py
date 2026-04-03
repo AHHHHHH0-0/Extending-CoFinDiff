@@ -6,10 +6,12 @@ from .decoder_block import DecoderBlock
 from .encoder_block import EncoderBlock
 from .residual_block import ResBlock
 from .cross_attention import SpatialCrossAttention
+from .film import FiLM
 
 __all__ = [
     "EncoderBlock",
     "DecoderBlock",
     "ResBlock",
     "SpatialCrossAttention",
+    "FiLM",
 ]
