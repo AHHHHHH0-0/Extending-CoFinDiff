@@ -22,6 +22,10 @@ CROSS_ATTN_NUM_HEADS = 4
 CROSS_ATTN_SCALE = 0.1 
 COND_CONTEXT_DIM = 32 # must match COND_OUTPUT_DIM in preprocess_config
 
+# FiLM parameters (macro conditioning)
+FILM_HIDDEN_DIM = 128
+NUM_MACRO_SCALARS = 2
+
 # U-Net model parameters
 TIME_EMBED_DIM = 256
 BASE_CHANNELS = 32

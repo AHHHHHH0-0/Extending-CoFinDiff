@@ -2,16 +2,18 @@ import torch
 import torch.nn as nn
 
 from config import denoiser_config
-from .unet_blocks import EncoderBlock, DecoderBlock, ResBlock, SpatialCrossAttention
+from .unet_blocks import EncoderBlock, DecoderBlock, ResBlock, SpatialCrossAttention, FiLM
 from .time_steps import timestep_embedding
 
 
 class UNetDenoiser(nn.Module):
     """
-    U-Net denoiser with cross-attention conditioning.
-    - Encoder: 3 levels with downsampling
-    - Bottleneck: ResBlock -> CrossAttention -> ResBlock
-    - Decoder: 3 levels with upsampling and skip connections
+    U-Net denoiser with two conditionings:
+      - Micro conditions (trend, realized vol) via cross-attention
+      - Macro conditions (interest rate, VIX) via FiLM after each cross-attention
+
+    Architecture per level:
+      ResBlock(h, t_emb) -> CrossAttention(h, micro_tokens) -> FiLM(h, macro_emb)
     """
     
     def __init__(
@@ -22,7 +24,8 @@ class UNetDenoiser(nn.Module):
         num_res_blocks: int = denoiser_config.NUM_RES_BLOCKS,
         time_embed_dim: int = denoiser_config.TIME_EMBED_DIM,
         cond_context_dim: int = denoiser_config.COND_CONTEXT_DIM,
-        num_heads: int = denoiser_config.CROSS_ATTN_NUM_HEADS
+        num_heads: int = denoiser_config.CROSS_ATTN_NUM_HEADS,
+        num_macro_scalars: int = denoiser_config.NUM_MACRO_SCALARS,
     ):
         super().__init__()
         
@@ -41,63 +44,63 @@ class UNetDenoiser(nn.Module):
         # Initial convolution
         self.input_conv = nn.Conv2d(in_channels, channels[0], kernel_size=3, padding=1)
         
-        # Encoder
+        # Encoder: ResBlocks + CrossAttention + FiLM at each level
         self.encoder_blocks = nn.ModuleList()
         self.encoder_attn_blocks = nn.ModuleList()
+        self.encoder_film_blocks = nn.ModuleList()
         for i in range(len(channels) - 1):
-            block = EncoderBlock(
+            self.encoder_blocks.append(EncoderBlock(
                 in_channels=channels[i],
                 out_channels=channels[i + 1],
                 time_embed_dim=time_embed_dim,
                 num_res_blocks=num_res_blocks,
                 downsample=True
-            )
-            attn = SpatialCrossAttention(
+            ))
+            self.encoder_attn_blocks.append(SpatialCrossAttention(
                 channels=channels[i + 1],
                 context_dim=cond_context_dim,
                 num_heads=num_heads
-            )
-            self.encoder_blocks.append(block)
-            self.encoder_attn_blocks.append(attn)
+            ))
+            self.encoder_film_blocks.append(FiLM(
+                num_macro_scalars=num_macro_scalars,
+                channels=channels[i + 1],
+            ))
         
-        # Bottleneck with cross-attention
-        self.bottleneck_res1 = ResBlock(
-            channels[-1],
-            channels[-1],
-            time_embed_dim
-        )
-        
+        # Bottleneck: ResBlock -> CrossAttention -> FiLM -> ResBlock
+        self.bottleneck_res1 = ResBlock(channels[-1], channels[-1], time_embed_dim)
         self.bottleneck_attn = SpatialCrossAttention(
             channels=channels[-1],
             context_dim=cond_context_dim,
             num_heads=num_heads
         )
-        
-        self.bottleneck_res2 = ResBlock(
-            channels[-1],
-            channels[-1],
-            time_embed_dim
+        self.bottleneck_film = FiLM(
+            num_macro_scalars=num_macro_scalars,
+            channels=channels[-1],
         )
+        self.bottleneck_res2 = ResBlock(channels[-1], channels[-1], time_embed_dim)
         
-        # Decoder
+        # Decoder: Upsample + Skip + ResBlocks + CrossAttention + FiLM at each level
         self.decoder_blocks = nn.ModuleList()
         self.decoder_attn_blocks = nn.ModuleList()
+        self.decoder_film_blocks = nn.ModuleList()
         for i in range(len(channels) - 1, 0, -1):
-            block = DecoderBlock(
+            self.decoder_blocks.append(DecoderBlock(
                 in_channels=channels[i],
                 out_channels=channels[i - 1],
                 skip_channels=channels[i],
                 time_embed_dim=time_embed_dim,
                 num_res_blocks=num_res_blocks,
                 upsample=True
-            )
-            attn = SpatialCrossAttention(
+            ))
+            self.decoder_attn_blocks.append(SpatialCrossAttention(
                 channels=channels[i - 1],
                 context_dim=cond_context_dim,
                 num_heads=num_heads
-            )
-            self.decoder_blocks.append(block)
-            self.decoder_attn_blocks.append(attn)
+            ))
+            self.decoder_film_blocks.append(FiLM(
+                num_macro_scalars=num_macro_scalars,
+                channels=channels[i - 1],
+            ))
         
         # Output convolution
         self.output_conv = nn.Sequential(
@@ -114,7 +117,8 @@ class UNetDenoiser(nn.Module):
         self,
         x: torch.Tensor,
         t: torch.Tensor,
-        cond_tokens: torch.Tensor
+        micro_cond_tokens: torch.Tensor,
+        macro_emb: torch.Tensor,
     ) -> torch.Tensor:
 
         # Create timestep embedding
@@ -124,23 +128,30 @@ class UNetDenoiser(nn.Module):
         # Initial convolution
         h = self.input_conv(x)
         
-        # Encoder with skip connections
+        # Encoder
         skips = []
-        for block, attn in zip(self.encoder_blocks, self.encoder_attn_blocks):
-            h, skip = block(h, t_emb)
-            h = attn(h, cond_tokens)
+        for enc, attn, film in zip(
+            self.encoder_blocks, self.encoder_attn_blocks, self.encoder_film_blocks
+        ):
+            h, skip = enc(h, t_emb)
+            h = attn(h, micro_cond_tokens)
+            h = film(h, macro_emb)
             skips.append(skip)
         
-        # Bottleneck with cross-attention
+        # Bottleneck
         h = self.bottleneck_res1(h, t_emb)
-        h = self.bottleneck_attn(h, cond_tokens)
+        h = self.bottleneck_attn(h, micro_cond_tokens)
+        h = self.bottleneck_film(h, macro_emb)
         h = self.bottleneck_res2(h, t_emb)
         
-        # Decoder with skip connections
-        for block, attn in zip(self.decoder_blocks, self.decoder_attn_blocks):
+        # Decoder
+        for dec, attn, film in zip(
+            self.decoder_blocks, self.decoder_attn_blocks, self.decoder_film_blocks
+        ):
             skip = skips.pop()
-            h = block(h, skip, t_emb)
-            h = attn(h, cond_tokens)
+            h = dec(h, skip, t_emb)
+            h = attn(h, micro_cond_tokens)
+            h = film(h, macro_emb)
         
         # Output
         return self.output_conv(h)
