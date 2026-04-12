@@ -24,5 +24,5 @@ COND_CONTEXT_DIM = 32 # must match COND_OUTPUT_DIM in preprocess_config
 
 # U-Net model parameters
 TIME_EMBED_DIM = 256
-BASE_CHANNELS = 32
+BASE_CHANNELS = 64 # best
 CHANNEL_MULT = [1, 2, 4, 8]
