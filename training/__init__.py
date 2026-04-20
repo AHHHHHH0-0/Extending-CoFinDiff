@@ -4,12 +4,14 @@ Training utilities for financial time series data.
 - Dataset for loading financial time series data.
 """
 
-from .train import train_step
-from .val import validate
+from .train import train_step_ca_film, train_step_ca
+from .val import validate_ca_film, validate_ca
 from .dataset import FinancialDataset
 
 __all__ = [
-    'train_step',
-    'validate',
+    'train_step_ca_film',
+    'validate_ca_film',
+    'train_step_ca',
+    'validate_ca',
     'FinancialDataset',
 ]

@@ -1,19 +1,14 @@
-"""
-Micro-economic condition encoder (augmented with macro conditions).
-Concatenate 2 scalars -> FC -> 1D Conv -> 2D Conv -> Spatial tokens (B, H*W, cond_output_dim)
-"""
-
 import torch
 import torch.nn as nn
 
 from config import preprocess_config
 
 
+"""
+Micro-economic condition encoder (augmented with macro conditions).
+Concatenate 2 scalars -> FC -> 1D Conv -> 2D Conv -> Spatial tokens (B, H*W, cond_output_dim)
+"""
 class MicroConditionEncoder(nn.Module):
-    """
-    Encode trend and realized volatility into spatial tokens for cross-attention conditioning.
-    """
-    
     def __init__(
         self,
         num_micro_scalars: int = preprocess_config.NUM_MICRO_SCALARS,
@@ -106,17 +101,7 @@ Cross-attention encoder only.
 Concatenate 4 scalars → FC → 1D Conv → 2D Conv → Spatial representation (H, W, context_dim)
 """
 
-import torch
-import torch.nn as nn
-
-from config import preprocess_config
-
-
 class ConditionEncoder(nn.Module):
-    """
-    Encode 4 scalar conditions into spatial tokens for cross-attention.
-    """
-    
     def __init__(
         self,
         num_condition_scalars: int = preprocess_config.NUM_CONDITION_SCALARS,
