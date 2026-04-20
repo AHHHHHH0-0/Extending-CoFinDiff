@@ -10,7 +10,7 @@ UP_SAMPLE_KERNEL_SIZE = 3
 UP_SAMPLE_PADDING = 1
 
 # Encoder and decoder block parameters
-NUM_RES_BLOCKS = 3
+NUM_RES_BLOCKS = 2 # 3 for ca-film
 
 # Residual block parameters
 RES_BLOCK_KERNEL_SIZE = 3
