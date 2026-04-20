@@ -20,4 +20,8 @@ dependencies:
   - ipykernel
   - wandb
   - yfinance
-  - dtaidistance
+  # dtaidistance is not on conda-forge/defaults; install via pip into this env.
+  # PyPI wheels often omit the C library (distance_matrix_fast); use use_c=False or build from source for C speedups.
+  - pip
+  - pip:
+    - dtaidistance
