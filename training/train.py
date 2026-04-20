@@ -6,13 +6,13 @@ import torch
 import torch.nn as nn
 from typing import Dict
 
-from diffusion import Diffusion
+from diffusion import DiffusionCAFilm
 from config import training_config, project_config
 
 
 def train_step(
     denoiser: nn.Module,
-    diffusion: Diffusion,
+    diffusion: DiffusionCAFilm,
     x: torch.Tensor,
     conditions: Dict[str, torch.Tensor],
     micro_encoder: nn.Module,

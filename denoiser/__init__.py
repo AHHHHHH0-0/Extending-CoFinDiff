@@ -1,9 +1,11 @@
 """
-CoFinDiff U-Net Denoiser Module with denoiser network and related components (U-net blocks).
+CoFinDiff U-Net Denoiser Module with 2 conditioning types: CA-Film and CA.
 """
 
-from .unet_model import UNetDenoiser
+from .unet_model_ca_film import UNetDenoiserCAFilm
+from .unet_model_ca import UNetDenoiserCA
 
 __all__ = [
-    "UNetDenoiser"
+    "UNetDenoiserCAFilm",
+    "UNetDenoiserCA"
 ]

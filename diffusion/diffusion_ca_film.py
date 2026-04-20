@@ -7,7 +7,7 @@ from config import diffusion_config, project_config
 from .utils import get_beta_schedule
 
 
-class Diffusion:
+class DiffusionCAFilm:
     """
     Denoising Diffusion Probabilistic Model (DDPM) implementation.
     - Forward diffusion process (adding noise)

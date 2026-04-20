@@ -6,14 +6,14 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from diffusion import Diffusion
+from diffusion import DiffusionCAFilm
 from config import project_config
 
 
 def validate(
     denoiser: nn.Module,
     micro_encoder: nn.Module,
-    diffusion: Diffusion,
+    diffusion: DiffusionCAFilm,
     val_loader: DataLoader,
     device: str = project_config.DEVICE,
 ) -> float:

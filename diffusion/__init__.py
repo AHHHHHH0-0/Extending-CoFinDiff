@@ -5,8 +5,10 @@ Diffusion module for CoFinDiff.
 - Training and sampling utilities
 """
 
-from .diffusion import Diffusion
+from .diffusion_ca_film import DiffusionCAFilm
+from .diffusion_ca import DiffusionCA
 
 __all__ = [
-    "Diffusion",
+    "DiffusionCAFilm",
+    "DiffusionCA"
 ]

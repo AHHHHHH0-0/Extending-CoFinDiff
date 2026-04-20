@@ -6,7 +6,7 @@ from .unet_blocks import EncoderBlock, DecoderBlock, ResBlock, SpatialCrossAtten
 from .time_steps import timestep_embedding
 
 
-class UNetDenoiser(nn.Module):
+class UNetDenoiserCAFilm(nn.Module):
     """
     U-Net denoiser with two conditionings:
       - Micro conditions (trend, realized vol) via cross-attention

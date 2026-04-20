@@ -6,7 +6,7 @@ from .unet_blocks import EncoderBlock, DecoderBlock, ResBlock, SpatialCrossAtten
 from .time_steps import timestep_embedding
 
 
-class UNetDenoiser(nn.Module):
+class UNetDenoiserCA(nn.Module):
     """
     U-Net denoiser with cross-attention conditioning.
     - Encoder: 3 levels with downsampling
