@@ -26,3 +26,4 @@ def adherence_table(metric: str, model: str, data: dict, filenames: list) -> tup
     print(f"Mean MAE: {mean_mae:<10.4f}    Pearson r: {r_val:<10.4f}")
 
     return targets, mean_achieved
+    
