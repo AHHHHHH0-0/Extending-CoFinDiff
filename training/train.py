@@ -7,7 +7,7 @@ from config import training_config, project_config
 
 
 """ 
-Single training step for CA-Film.
+Single training step for CA-FiLM.
 """  
 def train_step_ca_film(
     denoiser: nn.Module,
@@ -31,8 +31,11 @@ def train_step_ca_film(
         realized_vol=conditions['realized_vol'],
     )
     
-    # Stack and normalize macro conditions: (B, 2)
-    macro_emb = torch.cat([conditions['interest_rate'], conditions['volatility_index']], dim=1)
+    # Concatenate macro conditions
+    macro_emb = torch.cat([
+        conditions['interest_rate'],
+        conditions['volatility_index'],
+    ], dim=1)
     macro_emb = micro_encoder.normalize_macro(macro_emb)
 
     # Classifier-free guidance dropout (zero out both paths together)
@@ -63,39 +66,29 @@ def train_step_ca(
     p_uncond: float = training_config.P_UNCOND,
     device: str = project_config.DEVICE,
 ) -> float:
-    """
-    Single training step with classifier-free guidance dropout.
-    """
-    
-    B = x.size(0)
 
+    B = x.size(0)
+    
     # Sample random timesteps
     t = torch.randint(0, diffusion.T, (B,), device=device)
-
+    
+    # Encode conditions (ConditionEncoder applies fixed z-score normalization internally)
+    cond_tokens = cond_encoder(
+        trend=conditions['trend'],
+        realized_vol=conditions['realized_vol'],
+        interest_rate=conditions['interest_rate'],
+        volatility_index=conditions['volatility_index'],
+    )
+    
     # Classifier-free guidance dropout
     if p_uncond > 0:
-        keep = (~(torch.rand(B, device=device) < p_uncond)).float().unsqueeze(1)  # (B, 1)
-        trend         = conditions['trend']         * keep
-        realized_vol  = conditions['realized_vol']  * keep
-        interest_rate = conditions['interest_rate'] * keep
-        volatility_index = conditions['volatility_index'] * keep
-    else:
-        trend, realized_vol = conditions['trend'], conditions['realized_vol']
-        interest_rate, volatility_index = conditions['interest_rate'], conditions['volatility_index']
-
-    # Encode conditions
-    cond_tokens = cond_encoder(
-        trend=trend,
-        realized_vol=realized_vol,
-        interest_rate=interest_rate,
-        volatility_index=volatility_index,
-    )
-
+        uncond_mask = torch.rand(B, device=device) < p_uncond
+        cond_tokens = cond_tokens * (~uncond_mask).view(B, 1, 1).float()
+    
     # Compute loss and backprop
     optimizer.zero_grad()
     loss = diffusion.loss(denoiser, x, t, cond_tokens)
     loss.backward()
     optimizer.step()
-
-    return loss.item()
     
+    return loss.item()

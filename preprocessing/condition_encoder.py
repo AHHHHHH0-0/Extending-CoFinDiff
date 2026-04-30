@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from typing import List, Optional
 
 from config import preprocess_config
 
@@ -11,8 +12,8 @@ Concatenate 2 scalars -> FC -> 1D Conv -> 2D Conv -> Spatial tokens (B, H*W, con
 class MicroConditionEncoder(nn.Module):
     def __init__(
         self,
-        macro_means: list,
-        macro_stds: list,
+        macro_means: Optional[List[float]] = None,
+        macro_stds:  Optional[List[float]] = None,
         num_micro_scalars: int = preprocess_config.NUM_MICRO_SCALARS,
         cond_fc_hidden_dim: int = preprocess_config.COND_FC_HIDDEN_DIM,
         cond_1d_channels: int = preprocess_config.COND_1D_CHANNELS,
@@ -22,9 +23,11 @@ class MicroConditionEncoder(nn.Module):
     ):
         super().__init__()
 
-        # Fixed z-score normalization for macro conditions (interest_rate, volatility_index)
-        self.register_buffer('macro_norm_mean', torch.tensor(macro_means, dtype=torch.float32).unsqueeze(0))
-        self.register_buffer('macro_norm_std',  torch.tensor(macro_stds,  dtype=torch.float32).unsqueeze(0))
+        # Fixed z-score normalization for macro conditions.
+        _means = macro_means if macro_means is not None else [0.0, 0.0]
+        _stds  = macro_stds  if macro_stds  is not None else [1.0, 1.0]
+        self.register_buffer('macro_norm_mean', torch.tensor(_means, dtype=torch.float32).unsqueeze(0))
+        self.register_buffer('macro_norm_std',  torch.tensor(_stds,  dtype=torch.float32).unsqueeze(0))
 
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
@@ -65,8 +68,9 @@ class MicroConditionEncoder(nn.Module):
                 padding=1
             )
         )
-    
+
     def normalize_macro(self, macro_emb: torch.Tensor) -> torch.Tensor:
+        """Fixed z-score normalization for raw [interest_rate, volatility_index]."""
         return (macro_emb - self.macro_norm_mean) / self.macro_norm_std
 
     def forward(
@@ -102,7 +106,7 @@ class MicroConditionEncoder(nn.Module):
 
 
 """
-Cross-attention encoder only.
+Cross-attention encoder for CA model.
 - trend
 - realized volatility
 - interest rate
@@ -112,8 +116,8 @@ Concatenate 4 scalars → FC → 1D Conv → 2D Conv → Spatial representation 
 class ConditionEncoder(nn.Module):
     def __init__(
         self,
-        cond_means: list,
-        cond_stds: list,
+        cond_means: Optional[List[float]] = None,
+        cond_stds:  Optional[List[float]] = None,
         num_condition_scalars: int = preprocess_config.NUM_CONDITION_SCALARS,
         cond_fc_hidden_dim: int = preprocess_config.COND_FC_HIDDEN_DIM,
         cond_1d_channels: int = preprocess_config.COND_1D_CHANNELS,
@@ -126,9 +130,11 @@ class ConditionEncoder(nn.Module):
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
 
-        # Fixed z-score normalization using stats computed from the training dataset
-        self.register_buffer('norm_mean', torch.tensor(cond_means, dtype=torch.float32).unsqueeze(0))
-        self.register_buffer('norm_std',  torch.tensor(cond_stds,  dtype=torch.float32).unsqueeze(0))
+        # Fixed z-score normalization.
+        _means = cond_means if cond_means is not None else [0.0] * num_condition_scalars
+        _stds  = cond_stds  if cond_stds  is not None else [1.0] * num_condition_scalars
+        self.register_buffer('norm_mean', torch.tensor(_means, dtype=torch.float32).unsqueeze(0))
+        self.register_buffer('norm_std',  torch.tensor(_stds,  dtype=torch.float32).unsqueeze(0))
         
         # FC layer
         self.fc = nn.Sequential(
