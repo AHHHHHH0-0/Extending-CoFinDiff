@@ -6,12 +6,12 @@ metric:
 parameters:
   learning_rate:
     distribution: log_uniform_values
-    min: 1e-5
+    min: 1e-6
     max: 1e-4
   base_channels:
     values: [16, 32, 64]
   num_res_blocks:
-    values: [1, 2, 3]
+    values: [2, 3]
   beta_schedule:
     values: ['linear', 'cosine']
 early_terminate:
