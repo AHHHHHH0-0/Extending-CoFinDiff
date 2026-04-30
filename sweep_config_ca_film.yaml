@@ -1,3 +1,4 @@
+name: ca-film-fixed
 method: bayes
 metric:
   name: val_loss
