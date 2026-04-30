@@ -11,6 +11,8 @@ Concatenate 2 scalars -> FC -> 1D Conv -> 2D Conv -> Spatial tokens (B, H*W, con
 class MicroConditionEncoder(nn.Module):
     def __init__(
         self,
+        macro_means: list,
+        macro_stds: list,
         num_micro_scalars: int = preprocess_config.NUM_MICRO_SCALARS,
         cond_fc_hidden_dim: int = preprocess_config.COND_FC_HIDDEN_DIM,
         cond_1d_channels: int = preprocess_config.COND_1D_CHANNELS,
@@ -19,7 +21,11 @@ class MicroConditionEncoder(nn.Module):
         target_shape: tuple = preprocess_config.TARGET_SHAPE
     ):
         super().__init__()
-        
+
+        # Fixed z-score normalization for macro conditions (interest_rate, volatility_index)
+        self.register_buffer('macro_norm_mean', torch.tensor(macro_means, dtype=torch.float32).unsqueeze(0))
+        self.register_buffer('macro_norm_std',  torch.tensor(macro_stds,  dtype=torch.float32).unsqueeze(0))
+
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
         
@@ -60,6 +66,9 @@ class MicroConditionEncoder(nn.Module):
             )
         )
     
+    def normalize_macro(self, macro_emb: torch.Tensor) -> torch.Tensor:
+        return (macro_emb - self.macro_norm_mean) / self.macro_norm_std
+
     def forward(
         self,
         trend: torch.Tensor,
