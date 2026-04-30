@@ -1,7 +1,7 @@
 name: ca-only-fixed
 method: bayes
 metric:
-  name: val_loss
+  name: best_val_loss
   goal: minimize
 parameters:
   learning_rate:
