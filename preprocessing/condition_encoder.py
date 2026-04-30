@@ -100,10 +100,11 @@ Cross-attention encoder only.
 - volatility index
 Concatenate 4 scalars → FC → 1D Conv → 2D Conv → Spatial representation (H, W, context_dim)
 """
-
 class ConditionEncoder(nn.Module):
     def __init__(
         self,
+        cond_means: list,
+        cond_stds: list,
         num_condition_scalars: int = preprocess_config.NUM_CONDITION_SCALARS,
         cond_fc_hidden_dim: int = preprocess_config.COND_FC_HIDDEN_DIM,
         cond_1d_channels: int = preprocess_config.COND_1D_CHANNELS,
@@ -112,12 +113,13 @@ class ConditionEncoder(nn.Module):
         target_shape: tuple = preprocess_config.TARGET_SHAPE
     ):
         super().__init__()
-        
+
         self.H, self.W = target_shape
         self.spatial_size = self.H * self.W
-        
-        # Normalize each condition independently across the batch
-        self.input_norm = nn.BatchNorm1d(num_condition_scalars)
+
+        # Fixed z-score normalization using stats computed from the training dataset
+        self.register_buffer('norm_mean', torch.tensor(cond_means, dtype=torch.float32).unsqueeze(0))
+        self.register_buffer('norm_std',  torch.tensor(cond_stds,  dtype=torch.float32).unsqueeze(0))
         
         # FC layer
         self.fc = nn.Sequential(
@@ -168,7 +170,7 @@ class ConditionEncoder(nn.Module):
         
         # Concatenate: (B, 4)
         x = torch.cat([trend, realized_vol, interest_rate, volatility_index], dim=1)
-        x = self.input_norm(x)
+        x = (x - self.norm_mean) / self.norm_std
         
         # FC: (B, 4) → (B, H*W)
         x = self.fc(x)
