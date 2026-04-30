@@ -30,16 +30,11 @@ def validate_ca_film(
             B = x0.size(0)
             
             # Encode micro conditions for cross-attention
-            micro_cond_tokens = micro_encoder(
-                trend=batch['trend'].to(device),
-                realized_vol=batch['realized_vol'].to(device),
-            )
+            micro_cond_tokens = micro_encoder(trend=batch['trend'].to(device), realized_vol=batch['realized_vol'].to(device))
             
-            # Stack macro conditions for FiLM: (B, 2)
-            macro_emb = torch.cat([
-                batch['interest_rate'].to(device),
-                batch['volatility_index'].to(device),
-            ], dim=1)
+            # Stack and normalize macro conditions for FiLM: (B, 2)
+            macro_emb = torch.cat([batch['interest_rate'].to(device), batch['volatility_index'].to(device)], dim=1)
+            macro_emb = micro_encoder.normalize_macro(macro_emb)
             
             # Sample random timesteps
             t = torch.randint(0, diffusion.T, (B,), device=device)
