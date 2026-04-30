@@ -3,6 +3,7 @@ PyTorch Dataset for loading preprocessed financial data from JSON.
 """
 
 import json
+import numpy as np
 import torch
 from torch.utils.data import Dataset, Subset
 from typing import Dict, List
@@ -52,3 +53,19 @@ class FinancialDataset(Dataset):
 
     def get_subset(self, indices: List[int]) -> 'Subset':
         return Subset(self, indices)
+
+    def compute_norm_stats(self) -> Dict[str, list]:
+        """
+        Compute per-condition mean and std from the full dataset (4 or 2 conditions).
+        """
+        trends = np.array([s['trend'] for s in self.data], dtype=np.float64)
+        rvs = np.array([s['realized_vol'] for s in self.data], dtype=np.float64)
+        irs = np.array([s['interest_rate'] for s in self.data], dtype=np.float64)
+        vixs = np.array([s['volatility_index'] for s in self.data], dtype=np.float64)
+
+        return {
+            'cond_means': [float(trends.mean()), float(rvs.mean()), float(irs.mean()), float(vixs.mean())],
+            'cond_stds': [float(trends.std()), float(rvs.std()), float(irs.std()), float(vixs.std())],
+            'macro_means': [float(irs.mean()), float(vixs.mean())],
+            'macro_stds': [float(irs.std()), float(vixs.std())]
+        }
