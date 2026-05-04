@@ -3,7 +3,7 @@ Configuration for training.
 """
 
 BATCH_SIZE = 32
-LEARNING_RATE = 0.000005366512385636868 # wandb sweep
+LEARNING_RATE = 0.00000174553676160447 # wandb sweep
 EPOCHS = 3000 # paper faithful
 WEIGHT_DECAY = 0.01
 WARMUP_STEPS = 20
