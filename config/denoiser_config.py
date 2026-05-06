@@ -10,7 +10,8 @@ UP_SAMPLE_KERNEL_SIZE = 3
 UP_SAMPLE_PADDING = 1
 
 # Encoder and decoder block parameters
-NUM_RES_BLOCKS = 2 # wandb sweep
+# NUM_RES_BLOCKS = 2 # TODO: ca-film
+NUM_RES_BLOCKS = 3 # TODO: ca
 
 # Residual block parameters
 RES_BLOCK_KERNEL_SIZE = 3
@@ -28,5 +29,6 @@ NUM_MACRO_SCALARS = 2
 
 # U-Net model parameters
 TIME_EMBED_DIM = 256
-BASE_CHANNELS = 32 # wandb sweep
+# BASE_CHANNELS = 32 # TODO: ca-film
+BASE_CHANNELS = 64 # TODO: ca
 CHANNEL_MULT = [1, 2, 4, 8]
