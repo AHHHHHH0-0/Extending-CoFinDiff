@@ -6,7 +6,7 @@ import json
 import numpy as np
 import torch
 from torch.utils.data import Dataset, Subset
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class FinancialDataset(Dataset):
@@ -54,14 +54,16 @@ class FinancialDataset(Dataset):
     def get_subset(self, indices: List[int]) -> 'Subset':
         return Subset(self, indices)
 
-    def compute_norm_stats(self) -> Dict[str, list]:
+    def compute_norm_stats(self, indices: Optional[List[int]] = None) -> Dict[str, list]:
         """
-        Compute per-condition mean and std from the full dataset (4 or 2 conditions).
+        Per-condition mean/std for z-scoring in ConditionEncoder / MicroConditionEncoder.
+        Pass train split indices so validation rows do not influence normalization.
         """
-        trends = np.array([s['trend'] for s in self.data], dtype=np.float64)
-        rvs = np.array([s['realized_vol'] for s in self.data], dtype=np.float64)
-        irs = np.array([s['interest_rate'] for s in self.data], dtype=np.float64)
-        vixs = np.array([s['volatility_index'] for s in self.data], dtype=np.float64)
+        rows = self.data if indices is None else [self.data[i] for i in indices]
+        trends = np.array([s['trend'] for s in rows], dtype=np.float64)
+        rvs = np.array([s['realized_vol'] for s in rows], dtype=np.float64)
+        irs = np.array([s['interest_rate'] for s in rows], dtype=np.float64)
+        vixs = np.array([s['volatility_index'] for s in rows], dtype=np.float64)
 
         return {
             'cond_means': [float(trends.mean()), float(rvs.mean()), float(irs.mean()), float(vixs.mean())],
