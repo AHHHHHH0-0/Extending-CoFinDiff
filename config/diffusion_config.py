@@ -11,5 +11,5 @@ BETA_END = 0.02
 AUTO_NORMALIZE = False
 
 # Sampling parameters
-GUIDANCE_SCALE = 1.0 
+GUIDANCE_SCALE = 3.0 
 RETURN_TRAJECTORY = False
