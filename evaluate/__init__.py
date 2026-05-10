@@ -7,6 +7,7 @@ from .autocorrelation import acf_squared
 from .euclidean import summarize_distances, sample_pair_indices, euclidean_on_pairs
 from .dtw import dtw_on_pairs
 from .micro_cond import adherence_table
+from .remap import per_path_normalize
 
 __all__ = [
     'fisher_kurtosis',
@@ -16,4 +17,5 @@ __all__ = [
     'euclidean_on_pairs',
     'dtw_on_pairs',
     'adherence_table',
+    'per_path_normalize',
 ]
