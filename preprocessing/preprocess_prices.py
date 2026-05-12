@@ -7,30 +7,28 @@ import torch
 from config import preprocess_config
 
 
-def preprocess_prices(prices: torch.Tensor, start: int) -> tuple:
+def preprocess_prices(prices: torch.Tensor, start: int, global_std: float) -> tuple:
     """
     Preprocess 1D price series:
     1. Compute log returns: r_t = log(p_{t+1}) - log(p_t)
-    2. Standardize to zero mean and unit variance
+    2. Scale by RETURN_SCALE_FACTOR / global_std
     3. Apply Haar wavelet transform
     """
     # Compute log returns
     log_prices = torch.log(prices)
     log_returns = torch.diff(log_prices)
-    
+
     # Take T timesteps starting from start
     log_returns_windowed = log_returns[start:start+preprocess_config.T]
 
     # Get trend and realized vol
     trend = _get_trend(log_returns_windowed)
     realized_vol = _get_realized_vol(log_returns_windowed)
-    
-    # Standardize
-    mean = log_returns_windowed.mean()
-    std = log_returns_windowed.std()
-    standardized_returns = (log_returns_windowed - mean) / std
 
-    return standardized_returns, trend, realized_vol
+    # Apply global scale (no per-window mean subtraction)
+    scaled_returns = log_returns_windowed * preprocess_config.RETURN_SCALE_FACTOR / global_std
+
+    return scaled_returns, trend, realized_vol
 
 def _get_trend(log_returns: torch.Tensor) -> float:
     """
