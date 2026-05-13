@@ -11,8 +11,11 @@ def per_path_normalize(
     Remap each generated path so it exactly matches its target trend and
     realized volatility.
 
-    The model outputs paths in a standardized (inverse-Haar) space.  A global
-    affine remap (one std_w for all paths) systematically overshoots the target
+    Expects ``samples`` as per-day log returns in decimal (same units as raw
+    log returns). Training uses ``log_ret * scale_factor / global_std`` before
+    Haar; generation JSON should undo that scale so inputs here are log decimals.
+
+    A per-path affine remap (one std_w for all paths) systematically overshoots the target
     RV because the model's output variance is not exactly 1.  This function
     fixes that by normalizing each path individually:
 
@@ -27,7 +30,7 @@ def per_path_normalize(
     Parameters
     ----------
     samples : np.ndarray, shape (N, T)
-        Raw model output in standardized space.
+        Per-day log returns in decimal (model output after inverse Haar and global scale-back).
     t_tgt : float
         Target cumulative return in percentage points (e.g. -20, 0, 20).
     r_tgt : float
