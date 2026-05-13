@@ -1,4 +1,4 @@
-name: ca-only-fixed
+name: ca-only-better
 method: bayes
 metric:
   name: best_val_loss

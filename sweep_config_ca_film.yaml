@@ -1,4 +1,4 @@
-name: ca-film-fixed
+name: ca-film-better
 method: bayes
 metric:
   name: best_val_loss
