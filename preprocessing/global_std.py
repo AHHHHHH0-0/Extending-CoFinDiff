@@ -52,11 +52,3 @@ def load_global_stats(path: str | Path = "../../data/preprocessed/global_stats.j
     sf = float(d.get("scale_factor", preprocess_config.RETURN_SCALE_FACTOR))
 
     return float(d["global_std"]), sf
-
-
-def scaled_returns_to_log_decimal(x, global_std: float):
-    """
-    Map training-space returns (log_ret * scale_factor / global_std) back to log returns in decimal.
-    """
-    factor = global_std / preprocess_config.RETURN_SCALE_FACTOR
-    return x * factor

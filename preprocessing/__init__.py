@@ -10,7 +10,7 @@ Preprocessing utilities for financial time series data.
 from .preprocess_prices import preprocess_prices
 from .condition_encoder import MicroConditionEncoder, ConditionEncoder
 from .haar_wavelet import HaarWaveletTransform
-from .global_std import get_global_std, load_global_stats, scaled_returns_to_log_decimal
+from .global_std import get_global_std, load_global_stats
 
 __all__ = [
     'preprocess_prices',
@@ -19,5 +19,4 @@ __all__ = [
     'ConditionEncoder',
     'get_global_std',
     'load_global_stats',
-    'scaled_returns_to_log_decimal',
 ]
