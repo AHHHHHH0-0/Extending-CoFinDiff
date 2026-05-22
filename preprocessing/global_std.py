@@ -43,7 +43,7 @@ def get_global_std(raw_data_dir: str = "../../data/raw") -> float:
     return float(flat.std().item())
 
 
-def load_global_stats(path: str | Path = "../../data/preprocessed/global_stats.json") -> tuple[float, float]:
+def load_global_stats(path: str | Path = "../../data/train/global_stats.json") -> tuple[float, float]:
     """
     Load (global_std, scale_factor) written by the preprocess notebook.
     """
