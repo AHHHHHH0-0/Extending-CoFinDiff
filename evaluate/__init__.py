@@ -8,6 +8,7 @@ from .euclidean import summarize_distances, sample_pair_indices, euclidean_on_pa
 from .dtw import dtw_on_pairs
 from .micro_cond import adherence_table
 from .remap import per_path_normalize
+from .generated_io import condition_filename
 
 __all__ = [
     'fisher_kurtosis',
@@ -18,4 +19,5 @@ __all__ = [
     'dtw_on_pairs',
     'adherence_table',
     'per_path_normalize',
+    'condition_filename',
 ]
