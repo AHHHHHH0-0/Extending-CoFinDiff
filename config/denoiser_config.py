@@ -19,7 +19,7 @@ RES_BLOCK_DROPOUT = 0.0
 
 # Cross-attention parameters
 CROSS_ATTN_NUM_HEADS = 4
-CROSS_ATTN_SCALE = 0.1 
+CROSS_ATTN_SCALE = 1.0
 COND_CONTEXT_DIM = 32 # must match COND_OUTPUT_DIM in preprocess_config
 
 # FiLM parameters (macro conditioning)

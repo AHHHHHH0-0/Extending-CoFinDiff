@@ -21,6 +21,7 @@ def train_step_ca_film(
 ) -> float:
 
     B = x.size(0)
+    conditions = _maybe_shuffle_conditions(conditions, device)
     
     # Sample random timesteps
     t = torch.randint(0, diffusion.T, (B,), device=device)
@@ -68,6 +69,7 @@ def train_step_ca(
 ) -> float:
 
     B = x.size(0)
+    conditions = _maybe_shuffle_conditions(conditions, device)
     
     # Sample random timesteps
     t = torch.randint(0, diffusion.T, (B,), device=device)
@@ -92,3 +94,18 @@ def train_step_ca(
     optimizer.step()
     
     return loss.item()
+
+
+def _maybe_shuffle_conditions(
+    conditions: Dict[str, torch.Tensor],
+    device: str,
+    p: float = training_config.CONDITION_SHUFFLE_PROB,
+) -> Dict[str, torch.Tensor]:
+    """Permute conditions within the batch so c is not always paired with its own x."""
+    if p <= 0.0:
+        return conditions
+    batch = next(iter(conditions.values())).size(0)
+    if batch <= 1 or torch.rand(1, device=device).item() >= p:
+        return conditions
+    perm = torch.randperm(batch, device=device)
+    return {key: tensor[perm] for key, tensor in conditions.items()}
