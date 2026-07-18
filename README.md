@@ -1,9 +1,8 @@
-# Extending CoFinDiff
+# Extending CoFinDiff: Incorporating Macroeconomic Conditioning in Financial Time Series Generation
 
-**Honors Thesis Research** — Andrew Liu
-
-[Institution / Program]  
-[Thesis Title]
+- [Honors research thesis] () by Andrew Liu
+- Mentored by Dr. Weining Shen
+- University of California, Irvine
 
 This repository contains the code and experiments for an honors thesis that extends [CoFinDiff](https://doi.org/10.24963/ijcai.2025/1040) (Tanaka et al., IJCAI 2025), a conditional diffusion model for synthetic financial time series generation. The original model conditions generation on micro-level price statistics (trend and realized volatility) via cross-attention over a Haar wavelet 2D representation of log returns. This work adds macro-level conditioning (interest rate and VIX), compares two U-Net conditioning architectures, and provides a full pipeline for data preparation, training, generation, and evaluation.
 
@@ -115,7 +114,7 @@ Training notebooks include Colab setup cells (`git clone` + `%cd`). For local us
 
 ## Citation
 
-If you use CoFinDiff, please cite the original paper:
+The original CoFinDiff research paper by Tanaka et al.:
 
 ```bibtex
 @inproceedings{tanaka2025cofindiff,
@@ -126,18 +125,3 @@ If you use CoFinDiff, please cite the original paper:
   doi={10.24963/ijcai.2025/1040}
 }
 ```
-
-This work:
-
-```bibtex
-@mastersthesis{liu2026extending,
-  title={[Your Thesis Title]},
-  author={Liu, Andrew},
-  school={[Your Institution]},
-  year={2026}
-}
-```
-
-## Acknowledgments
-
-Alpha Vantage (market data), yfinance (VIX), Weights & Biases (experiment tracking), dtaidistance (DTW metrics), PyTorch.
